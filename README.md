@@ -50,6 +50,6 @@ override.tf.json
 terraform.rc
 #игнорирование файлов, находящихся в любом каталоге, например tmp/terraform.rc или terraform.rc или .terraformrc
 
-
+It's usually very cold here in winter
 
 
