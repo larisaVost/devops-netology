@@ -113,54 +113,56 @@ Enter path to the local repository: C:\Users\LVost\PycharmProjects\devops-netolo
 
 ### Ваш скрипт:
 ```python
-import socket
-from string import whitespace
 import datetime as dt
+import socket as s
+import time as t
 
-array_hosts = ["drive.google.com", "mail.google.com", "google.com"]
+array_hosts = {'drive.google.com':'74.125.131.0', 'mail.google.com':'142.250.150.15', 'google.com':'216.239.38.18'}
+cnt=int(1)
 f_list = []
+delay=5
 
 with open('check.log') as file:
     for j in file:
         f_list.append(j)
 
 with open('check.log', 'w+') as file:
-    for i in array_hosts:
-        result = socket.gethostbyname(i)
-        added = 0
-        for y in f_list:
-            in_list = y.find(" {}".format(i))
-            if (in_list != -1):
-                str_ip=y.replace('\n', '').split("  ")[1].translate({None: whitespace})
-                if (str_ip == result):
-                    print(str(dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))," {}  {}\n".format(i, result))
-                    file.write("{} {}  {}\n".format(str(dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")), i, result))
-                    added = 1
-                    break
-                else:
-                    print(str(dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),"[ERROR] {} IP mismatch: {}  {}\n".format(i, str_ip, result))
-                    file.write("{} [ERROR] {} IP mismatch: {}  {}\n".format(str(dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),i, str_ip, result))
-                    added = 1
-                    break
-        if (added == 0):
-            print(" {}  {}\n".format(i, result))
-            file.write(" {}  {}\n".format(i, result))
+    while 1==1 :
+        #print(str(cnt),' проверка:')
+        for host in array_hosts:
+            if cnt == 1:
+                print(str(dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")), " {}  {}\n".format(str(host), array_hosts[host]))
+                file.write("{} {}  {}\n".format(str(dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")), str(host), array_hosts[host]))
+            else:
+                #print(str(host))
+                ip_host = s.gethostbyname(host)
+                if ip_host != array_hosts[host]:
+                    print(str(dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+                          "[ERROR] {} IP mismatch: {}  {}\n".format(str(host), array_hosts[host], ip_host))
+                    file.write(
+                        "{} [ERROR] {} IP mismatch: {}  {}\n".format(str(dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+                                                                     str(host), array_hosts[host], ip_host))
+                    array_hosts[host]=ip_host
+        cnt+=1
+        t.sleep(delay)
+        #if cnt>5 :
+        #    break
+
+
 
 ```
 
 ### Вывод скрипта при запуске при тестировании:
 ```
-2022-05-26 22:05:08  drive.google.com  74.125.131.194
-
-2022-05-26 22:05:08  mail.google.com  74.125.205.18
-
-2022-05-26 22:05:08  google.com  216.239.38.120
-
-2022-05-26 22:05:53  drive.google.com  74.125.131.194
-
-2022-05-26 22:05:53 [ERROR] mail.google.com IP mismatch: 74.125.205.18  74.125.131.19
-
-2022-05-26 22:05:53  google.com  216.239.38.120
+2022-05-28 19:02:16 drive.google.com  74.125.131.0
+2022-05-28 19:02:16 mail.google.com  142.250.150.15
+2022-05-28 19:02:16 google.com  216.239.38.18
+2022-05-28 19:02:21 [ERROR] drive.google.com IP mismatch: 74.125.131.0  64.233.163.194
+2022-05-28 19:02:21 [ERROR] mail.google.com IP mismatch: 142.250.150.15  64.233.162.17
+2022-05-28 19:02:21 [ERROR] google.com IP mismatch: 216.239.38.18  216.239.38.120
+2022-05-28 19:02:36 [ERROR] drive.google.com IP mismatch: 64.233.163.194  64.233.162.194
+2022-05-28 19:06:02 [ERROR] drive.google.com IP mismatch: 64.233.162.194  209.85.233.194
+2022-05-28 19:06:52 [ERROR] drive.google.com IP mismatch: 209.85.233.194  74.125.205.194
 
 
 ```
